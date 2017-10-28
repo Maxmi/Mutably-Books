@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Mutably front-end</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/7.0.0/normalize.min.css">
+  <link rel="stylesheet" type="text/css" href="/style.css">
+
+</head>
+
+<body class="container">
+  <div class="col-sm-8 col-sm-offset-2">
+    <nav class="navbar navbar-default">
+      <a class="navbar-brand" href="/">Mutably App</a>
+    </nav>
+    <div class="panel panel-default">
+      <div class="panel-heading"><h1>Books we love</h1></div>
+
+      <form id="addItem" class="form-horizontal">
+        <ul class="form-horizontal">
+          <li class="list-group-item">
+            <label for="title">Title</label>
+            <input type="text" name="title" class="form-control">
+          </li>
+          <li class="list-group-item">
+            <label for="author">Author</label>
+            <input type="text" name="author"  class="form-control">
+          </li>
+          <li class="list-group-item">
+            <label for="releaseDate">Release Date</label>
+            <input type="date" name="releaseDate"  class="form-control">
+          </li>
+          <li class="list-group-item">
+            <label for="image">Image</label>
+            <input type="text" name="image" class="form-control">
+          </li>
+          <li class="list-group-item">
+            <button class="btn btn-primary" type="submit" id="create">Add your book</button>
+          </li>
+        </ul>
+      </form>
+
+      <ul class="list-group">
+
+      </ul>
+    </div>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js"></script>
+  <script type="text/javascript" src="/script.js"></script>
+</body>
+
+</html>
