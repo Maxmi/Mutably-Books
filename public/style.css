@@ -1,18 +1,11 @@
 /*Custom styles here*/
-
 body {
   font-family: Merriweather;
   font-size: 20px;
-  /*border: 1px solid #f5f5f5;*/
 }
 
-/*div.panel-default {
-  border: 1px solid #f5f5f5;
-}*/
-
 div.panel-heading {
-  text-align: center;
-  
+  text-align: center;  
 }
 
 ul.form-horizontal {
@@ -20,16 +13,25 @@ ul.form-horizontal {
   padding: 0;
 }
 
+.form-control {
+  font-size: 20px;
+}
+
 ul.list-group, .list-group-item {
   border: 1px solid #ccc;
 }
 
-li.form-control.image {
+.form-control.image {
   height: 160px;
 }
 
-.edit, .delete {
+.form-control.image-input {
+  height: 34px;
+}
+
+.edit, .delete, #create {
   margin: 5px;
+  font-size: 16px;
 }
 
 .form-group {
@@ -38,6 +40,6 @@ li.form-control.image {
   width: 100%;
 }
 
-button#create {
-  margin-left: 570px;
+#create {
+  margin-left: 550px;
 }
