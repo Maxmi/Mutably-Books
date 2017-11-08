@@ -60,8 +60,6 @@ $(document).ready(function() {
     })
   };
 
-
-
   const createInput = (type, cssClass, val) => {
     return $("<input/>").attr('type', type).addClass(cssClass).val(val);
   };
@@ -140,7 +138,7 @@ $(document).ready(function() {
   };
 
 
-  // //handler for "Edit" button 
+  //handler for "Edit" button 
   $('.books-list').on('click', '.btn.update-btn',  (event) => {
     const button = $(event.target);
     const li = button.parent();
