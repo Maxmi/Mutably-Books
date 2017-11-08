@@ -1,14 +1,12 @@
-//can't edit again after editing 
-//can't delete a book after editing
-//can't edit or delete the newly added book 
 $(document).ready(function() {
+
   //place where retrieved data will be displayed 
   const $ul = $('.list-group');
 
   //calling api and getting list of books to the page  
   const renderBook = (book) => {
     return $("<li></li>").addClass("list-group-item").html(`
-      <button type="button" class="btn btn-info edit">Edit</button>
+      <button type="button" class="btn btn-info update-btn edit">Edit</button>
       <button type="button" class="btn btn-default delete">Delete</button>
       
       <div class="form-control title">${book.title}</div> 
@@ -17,6 +15,20 @@ $(document).ready(function() {
       <div class="form-control image"><img src="${book.image}" class="image" height="150"/></div>
       `)
       .data("id", book._id)
+  };
+
+  // validating form for adding new item  
+  const validateForm = (values) => {
+    const rawErrors = Object.keys(values).map(key => {
+      if (!values[key]) {
+        return {
+          name: key,
+          error: `${key} cannot be empty`
+        }
+      }
+      return '';
+    })
+    return _.compact(rawErrors);
   };
 
   const addBook = (values) => {
@@ -35,12 +47,6 @@ $(document).ready(function() {
       })
   };
 
-  const deleteBook = (bookId) => {
-    return $.ajax({
-        method: 'DELETE',
-        url: `http://mutably.herokuapp.com/books/${bookId}`
-      })
-  };
 
   const saveBook = ({
     book,
@@ -51,27 +57,15 @@ $(document).ready(function() {
       url: `http://mutably.herokuapp.com/books/${bookId}`,
       data: book,
       dataType: "json"
-    }) 
+    })
   };
 
-  // validating form for adding new item  
-  const validateForm = (values) => {
-    const rawErrors = Object.keys(values).map(key => {
-      if (!values[key]) {
-        return {
-          name: key,
-          error: `${key} cannot be empty`
-        }
-      }
-      return '';
-    })
-    return _.compact(rawErrors);
-  };
+
 
   const createInput = (type, cssClass, val) => {
     return $("<input/>").attr('type', type).addClass(cssClass).val(val);
   };
-  
+
   /**
    * Creates new element li
    * @param  {string} cssClass cssClass to apply to li element 
@@ -82,6 +76,20 @@ $(document).ready(function() {
     return $("<li></li>").addClass(cssClass).text(text);
   }
 
+  //handler for "Add your book" button 
+  $("#create").on('click', (event) => {
+    event.preventDefault();
+    const values = {};
+    $.each($('#addItem').serializeArray(), (i, field) => {
+      values[field.name] = field.value;
+    });
+    const errors = validateForm(values);
+    if (_.isEmpty(errors)) {
+      addBook(values);
+    } else {
+      console.log(errors);
+    }
+  });
 
   const editInfo = (li) => {
     const title = li.find('.title');
@@ -108,11 +116,10 @@ $(document).ready(function() {
     li.append(titleInput, authorInput, releaseDateInput, imageInput);
   };
 
-
   const saveInfo = (li) => {
     const titleInput = li.find('.title');
     const authorInput = li.find('.author');
-    const releaseDateInput = li.find('.release-date'); //correct later 
+    const releaseDateInput = li.find('.release-date');
     const imageInput = li.find('.image-input');
 
     saveBook({
@@ -132,6 +139,42 @@ $(document).ready(function() {
       })
   };
 
+
+  // //handler for "Edit" button 
+  $('.books-list').on('click', '.btn.update-btn',  (event) => {
+    const button = $(event.target);
+    const li = button.parent();
+    button.toggleClass('btn-success btn-info edit save');
+    if (button.hasClass('save')) {
+      button.text('Save');
+      editInfo(li);
+    } else {
+      button.text('Edit');
+      saveInfo(li);
+    }
+  });
+
+  const deleteBook = (bookId) => {
+    return $.ajax({
+      method: 'DELETE',
+      url: `http://mutably.herokuapp.com/books/${bookId}`
+    })
+  };
+
+  //handler for "Delete" button 
+  $(".books-list").on('click', '.btn.delete', (event) => {
+    const button = $(event.target);
+    const li = button.parent();
+    const id = li.data("id");
+    deleteBook(id)
+      .then(() => {
+        li.remove();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  })
+
   //getting books from api 
   $.ajax({
       method: "GET",
@@ -142,49 +185,6 @@ $(document).ready(function() {
       let content = '';
       content = res.books.map(book => renderBook(book));
       $ul.html(content);
-
-      //handler for "Add your book" button 
-      $("#create").click((event) => {
-        event.preventDefault();
-        const values = {};
-        $.each($('#addItem').serializeArray(), (i, field) => {
-          values[field.name] = field.value;
-        });
-        const errors = validateForm(values);
-        if (_.isEmpty(errors)) {
-          addBook(values);
-        } else {
-          console.log(errors);
-        }
-      });
-
-      //handler for "Edit" button 
-      $(".btn.edit").click((event) => {
-        const button = $(event.target);
-        const li = button.parent();
-        button.toggleClass("btn-success btn-info edit save");
-        if (button.hasClass('save')) {
-          button.text('Save');
-          editInfo(li);
-        } else {
-          button.text('Edit');
-          saveInfo(li);
-        }
-      });
-
-      //handler for "Delete" button 
-      $(".btn.delete").click((event) => {
-        const button = $(event.target);
-        const li = button.parent();
-        const id = li.data("id");
-        deleteBook(id)
-          .then(() => {
-          li.remove();
-        })
-          .catch((err) => {
-            console.log(err);
-        });
-      })
     })
     .catch(err => {
       $ul.html('Error occured.');
