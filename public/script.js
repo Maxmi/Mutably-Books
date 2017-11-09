@@ -5,7 +5,7 @@ $(document).ready(function() {
 
   //making GET request to api - getting all books
   const getBooks = () => {
-    return fetch('http://mutably.herokuapp.com/books');
+    return fetch('https://mutably.herokuapp.com/books');
   };
 
   //adding individual book to the page
@@ -49,7 +49,7 @@ $(document).ready(function() {
 
   //making POST request to api - creating new item
   const addBook = values => {
-    return fetch('http://mutably.herokuapp.com/books', {
+    return fetch('https://mutably.herokuapp.com/books', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -118,7 +118,7 @@ $(document).ready(function() {
 
   //making PUT request to api - updating book info
   const saveBook = ({book, bookId}) => {
-    return fetch(`http://mutably.herokuapp.com/books/${bookId}`, {
+    return fetch(`https://mutably.herokuapp.com/books/${bookId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -168,7 +168,7 @@ $(document).ready(function() {
 
   //makind DELETE request to api - deleting an item
   const deleteBook = bookId => {
-    return fetch(`http://mutably.herokuapp.com/books/${bookId}`, {method: 'DELETE'})
+    return fetch(`https://mutably.herokuapp.com/books/${bookId}`, {method: 'DELETE'})
   };
 
   //handler for "Delete" button
