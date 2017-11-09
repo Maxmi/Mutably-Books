@@ -3,8 +3,8 @@ $(document).ready(function() {
   //place where retrieved data will be displayed 
   const $ul = $('.list-group');
 
-  //calling api and getting list of books to the page  
-  const renderBook = (book) => {
+  //adding individual book to the page  
+  const renderBook = book => {
     return $("<li></li>").addClass("list-group-item").html(`
       <button type="button" class="btn btn-info update-btn edit">Edit</button>
       <button type="button" class="btn btn-default delete">Delete</button>
@@ -18,7 +18,7 @@ $(document).ready(function() {
   };
 
   // validating form for adding new item  
-  const validateForm = (values) => {
+  const validateForm = values => {
     const rawErrors = Object.keys(values).map(key => {
       if (!values[key]) {
         return {
@@ -31,48 +31,17 @@ $(document).ready(function() {
     return _.compact(rawErrors);
   };
 
-  const addBook = (values) => {
-    return $.ajax({
-        method: "POST",
-        url: "http://mutably.herokuapp.com/books",
-        data: values,
-        dataType: "json"
-      })
-      .then(book => {
-        $ul.prepend(renderBook(book));
-        $("#addItem")[0].reset();
-      })
-      .catch(err => {
-        console.log(err);
-      })
-  };
-
-
-  const saveBook = ({
-    book,
-    bookId
-  }) => {
-    return $.ajax({
-      method: 'PUT',
-      url: `http://mutably.herokuapp.com/books/${bookId}`,
-      data: book,
-      dataType: "json"
+//making POST request to api - creating new item 
+  const addBook = values => {
+    return fetch('http://mutably.herokuapp.com/books', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(values)
     })
-  };
-
-  const createInput = (type, cssClass, val) => {
-    return $("<input/>").attr('type', type).addClass(cssClass).val(val);
-  };
-
-  /**
-   * Creates new element li
-   * @param  {string} cssClass cssClass to apply to li element 
-   * @param  {string} text     text in li 
-   * @return {jQuery.Element}
-   */
-  const createLi = (cssClass, text) => {
-    return $("<li></li>").addClass(cssClass).text(text);
   }
+
 
   //handler for "Add your book" button 
   $("#create").on('click', (event) => {
@@ -83,13 +52,34 @@ $(document).ready(function() {
     });
     const errors = validateForm(values);
     if (_.isEmpty(errors)) {
-      addBook(values);
+      addBook(values)
+        .then(res => {
+          return res.json();
+        })
+        .then(book => {
+          $ul.prepend(renderBook(book));
+          $('#addItem')[0].reset();
+        })
+        .catch(err => {
+          console.log(err);
+        })
     } else {
       console.log(errors);
     }
   });
 
-  const editInfo = (li) => {
+  //create new fields for saving updated book info 
+  const createInput = (type, cssClass, val) => {
+    return $("<input/>").attr('type', type).addClass(cssClass).val(val);
+  };
+  
+  //when clicking on Edit button:
+  //finding input fields
+  //getting their text values
+  //creating new input fields with those values
+  //removing old input fields
+  //inserting new input fields into li element
+  const editInfo = li => {
     const title = li.find('.title');
     const author = li.find('.author');
     const releaseDate = li.find('.releaseDate');
@@ -114,23 +104,43 @@ $(document).ready(function() {
     li.append(titleInput, authorInput, releaseDateInput, imageInput);
   };
 
-  const saveInfo = (li) => {
+//making PUT request to api - updating book info 
+  const saveBook = ({
+    book,
+    bookId
+    }) => {
+    return fetch(`http://mutably.herokuapp.com/books/${bookId}`, 
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+      },
+        body: JSON.stringify(book)
+      }
+  )};
+
+//saving updated info 
+  const saveInfo = li => {
     const titleInput = li.find('.title');
     const authorInput = li.find('.author');
     const releaseDateInput = li.find('.release-date');
     const imageInput = li.find('.image-input');
 
     saveBook({
-        book: {
-          title: titleInput.val(),
-          author: authorInput.val(),
-          releaseDate: releaseDateInput.val(),
-          image: imageInput.val()
-        },
-        bookId: li.data("id")
+      book: {
+        title: titleInput.val(),
+        author: authorInput.val(),
+        releaseDate: releaseDateInput.val(),
+        image: imageInput.val()
+      },
+      bookId: li.data('id')
+    })
+      .then(res => {
+        return res.json();
       })
       .then(book => {
         li.replaceWith(renderBook(book));
+        console.log(`Book with id ${book._id} has been updated`);
       })
       .catch(err => {
         console.log(err);
@@ -139,7 +149,7 @@ $(document).ready(function() {
 
 
   //handler for "Edit" button 
-  $('.books-list').on('click', '.btn.update-btn',  (event) => {
+  $('.books-list').on('click', '.btn.update-btn', (event) => {
     const button = $(event.target);
     const li = button.parent();
     button.toggleClass('btn-success btn-info edit save');
@@ -152,40 +162,50 @@ $(document).ready(function() {
     }
   });
 
-  const deleteBook = (bookId) => {
-    return $.ajax({
-      method: 'DELETE',
-      url: `http://mutably.herokuapp.com/books/${bookId}`
+//makind DELETE request to api - deleting an item 
+  const deleteBook = bookId => {
+    return fetch(`http://mutably.herokuapp.com/books/${bookId}`, {
+      method: 'DELETE'
     })
   };
 
+
   //handler for "Delete" button 
-  $(".books-list").on('click', '.btn.delete', (event) => {
+  $('.books-list').on('click', '.btn.delete', (event) => {
     const button = $(event.target);
     const li = button.parent();
-    const id = li.data("id");
+    const id = li.data('id');
     deleteBook(id)
       .then(() => {
         li.remove();
+        console.log(`Book with id ${id} has been removed`);
       })
       .catch((err) => {
         console.log(err);
       });
-  })
+  });
 
-  //getting books from api 
-  $.ajax({
-      method: "GET",
-      url: "http://mutably.herokuapp.com/books",
-      dataType: "json"
-    })
-    .then(res => {
-      let content = '';
-      content = res.books.map(book => renderBook(book));
-      $ul.html(content);
-    })
-    .catch(err => {
-      $ul.html('Error occured.');
-    });
+//making GET request to api - getting all books 
+  const getBooks = () => {
+    return fetch('http://mutably.herokuapp.com/books');
+  };
+
+//rendering retrieved info on the page - inserting into ul element 
+  const displayBooks = () => {
+    getBooks()
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        let content = '';
+        content = res.books.map(book => renderBook(book));
+        $ul.html(content);
+      })
+      .catch(err => {
+        $ul.html('Error occured.');
+      });
+  };
+  
+  displayBooks();
 
 }); //end of doc ready
