@@ -1,16 +1,18 @@
 /*Custom styles here*/
 body {
+  width: 40%;
+  margin: auto 0;
   font-family: Merriweather;
   font-size: 20px;
 }
 
 div.panel-heading {
-  text-align: center;  
+  text-align: center;
 }
 
-ul.form-horizontal {
-  margin: 10px;
-  padding: 0;
+form {
+  border: 1px solid #ccc;
+  padding: 15px;
 }
 
 .form-control {
@@ -38,8 +40,4 @@ ul.list-group, .list-group-item {
   padding: 10px;
   display: inline;
   width: 100%;
-}
-
-#create {
-  margin-left: 550px;
 }

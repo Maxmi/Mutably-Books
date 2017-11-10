@@ -1,5 +1,4 @@
 $(document).ready(function() {
-
   //place where retrieved data will be displayed
   const $ul = $('.list-group');
 
@@ -18,7 +17,7 @@ $(document).ready(function() {
       <div class="form-control author">${book.author}</div>
       <div class="form-control releaseDate">${book.releaseDate}</div>
       <div class="form-control image"><img src="${book.image}" class="image" height="150"/></div>
-      `).data("id", book._id)
+      `).data('id', book._id)
   };
 
   //rendering retrieved info on the page - inserting into ul element
@@ -36,11 +35,11 @@ $(document).ready(function() {
 
   displayBooks();
 
-  // validating form for adding new item
+  //  validating form for adding new item
   const validateForm = values => {
     const rawErrors = Object.keys(values).map(key => {
       if (!values[key]) {
-        return {name: key, error: `${key} cannot be empty`}
+        return {name: key, error: `${key} cannot be empty`};
       }
       return '';
     })
@@ -58,15 +57,27 @@ $(document).ready(function() {
     })
   };
 
-  //handler for "Add your book" button
+  //  handler for "Add your book" button
   $("#create").on('click', (event) => {
     event.preventDefault();
     const values = {};
     $.each($('#addItem').serializeArray(), (i, field) => {
       values[field.name] = field.value;
     });
+
+    console.log('values=>',values);
+
     const errors = validateForm(values);
-    if (_.isEmpty(errors)) {
+    let errorMsg = '';
+    const $errMsg = $('.error-message');
+
+    if (!(_.isEmpty(errors))) {
+      errors.forEach(item => {
+        errorMsg += `*${item.error}*`;
+      })
+      $errMsg.html(errorMsg);
+    } else {
+      $errMsg.html('');
       addBook(values).then(res => {
         return res.json();
       }).then(book => {
@@ -75,8 +86,6 @@ $(document).ready(function() {
       }).catch(err => {
         console.log(err);
       })
-    } else {
-      console.log(errors);
     }
   });
 
@@ -105,7 +114,7 @@ $(document).ready(function() {
 
     const titleInput = createInput('text', 'title form-control', titleText);
     const authorInput = createInput('text', 'author form-control', authorText);
-    const releaseDateInput = createInput('text', 'release-date form-control', releaseDateText);
+    const releaseDateInput = createInput('text', 'releaseDate form-control', releaseDateText);
     const imageInput = createInput('text', 'image-input form-control', imageSrc);
 
     title.remove();
@@ -131,7 +140,7 @@ $(document).ready(function() {
   const saveInfo = li => {
     const titleInput = li.find('.title');
     const authorInput = li.find('.author');
-    const releaseDateInput = li.find('.release-date');
+    const releaseDateInput = li.find('.releaseDate');
     const imageInput = li.find('.image-input');
 
     saveBook({
