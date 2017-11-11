@@ -2,7 +2,7 @@ $(document).ready(function() {
   //place where retrieved data will be displayed
   const $ul = $('.list-group');
 
-  //making GET request to api - getting all books
+  //making GET request to api
   const getBooks = () => {
     return fetch('https://mutably.herokuapp.com/books');
   };
@@ -33,7 +33,29 @@ $(document).ready(function() {
     });
   };
 
-  displayBooks();
+  // displayBooks();
+
+  // handler for See All Books button
+  $('#getAllBooks').on('click', (event) => {
+    event.preventDefault();
+    const button = $(event.target);
+    const booksList = $('.list-group.books-list');
+
+    button.toggleClass('show-books hide-books');
+
+    if (button.hasClass('hide-books')) {
+      button.text('Hide Books');
+      displayBooks();
+    } else {
+      button.text('See All Books');
+      booksList.empty();
+    }
+  });
+
+  //form validation error messages will be put into spans
+  const createSpan = (cssClass, text) => {
+    return $("<span/>").addClass(cssClass).text(text);
+  };
 
   //  validating form for adding new item
   const validateForm = values => {
@@ -46,7 +68,8 @@ $(document).ready(function() {
     return _.compact(rawErrors);
   };
 
-  //making POST request to api - creating new item
+
+  //making POST request to api
   const addBook = values => {
     return fetch('https://mutably.herokuapp.com/books', {
       method: 'POST',
@@ -64,20 +87,16 @@ $(document).ready(function() {
     $.each($('#addItem').serializeArray(), (i, field) => {
       values[field.name] = field.value;
     });
-
-    console.log('values=>',values);
+      $('#addItem').find('.error-msg').remove();
 
     const errors = validateForm(values);
-    let errorMsg = '';
-    const $errMsg = $('.error-message');
 
-    if (!(_.isEmpty(errors))) {
+    if (!_.isEmpty(errors)) {
       errors.forEach(item => {
-        errorMsg += `*${item.error}*`;
+        const span = createSpan('error-msg', item.error);
+        span.insertBefore($('#addItem').find(`input[name="${item.name}"]`));
       })
-      $errMsg.html(errorMsg);
     } else {
-      $errMsg.html('');
       addBook(values).then(res => {
         return res.json();
       }).then(book => {
@@ -125,7 +144,7 @@ $(document).ready(function() {
     li.append(titleInput, authorInput, releaseDateInput, imageInput);
   };
 
-  //making PUT request to api - updating book info
+  //making PUT request to api
   const saveBook = ({book, bookId}) => {
     return fetch(`https://mutably.herokuapp.com/books/${bookId}`, {
       method: 'PUT',
@@ -161,7 +180,7 @@ $(document).ready(function() {
     })
   };
 
-  //handler for "Edit" button
+  //handler for Edit button
   $('.books-list').on('click', '.btn.update-btn', (event) => {
     const button = $(event.target);
     const li = button.parent();
@@ -175,12 +194,12 @@ $(document).ready(function() {
     }
   });
 
-  //makind DELETE request to api - deleting an item
+  //makind DELETE request to api
   const deleteBook = bookId => {
     return fetch(`https://mutably.herokuapp.com/books/${bookId}`, {method: 'DELETE'})
   };
 
-  //handler for "Delete" button
+  //handler for Delete button
   $('.books-list').on('click', '.btn.delete', (event) => {
     const button = $(event.target);
     const li = button.parent();

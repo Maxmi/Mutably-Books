@@ -1,7 +1,7 @@
 /*Custom styles here*/
 body {
-  width: 40%;
-  margin: auto 0;
+  width: 60%;
+  margin: 0 auto;
   font-family: Merriweather;
   font-size: 20px;
 }
@@ -23,6 +23,10 @@ ul.list-group, .list-group-item {
   border: 1px solid #ccc;
 }
 
+.book-info {
+  margin: 0 0 10px;
+}
+
 .form-control.image {
   height: 160px;
 }
@@ -40,4 +44,9 @@ ul.list-group, .list-group-item {
   padding: 10px;
   display: inline;
   width: 100%;
+}
+
+.error-msg {
+  color: red;
+  font-size: 12px;
 }
