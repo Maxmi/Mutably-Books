@@ -11,7 +11,7 @@ $(document).ready(function() {
   const renderBook = book => {
     return $("<li></li>").addClass("list-group-item").html(`
       <button type="button" class="btn btn-info update-btn edit">Edit</button>
-      <button type="button" class="btn btn-default delete">Delete</button>
+      <button type="button" class="btn btn-warning delete">Delete</button>
 
       <div class="form-control title">${book.title}</div>
       <div class="form-control author">${book.author}</div>
