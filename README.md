@@ -16,7 +16,7 @@ Users can view books, add their book, update it or delete it.
 
 
 ## Deployed Site:
-https://shielded-meadow-17522.herokuapp.com  
+https://books-mutably-mira.herokuapp.com/  
 
 ## To get this project running on your local environment:
 * Clone/Fork - `https://github.com/Maxmi/Mutably-Books.git`  
