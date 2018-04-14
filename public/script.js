@@ -9,7 +9,10 @@ $(document).ready(function() {
 
   //adding individual book to the page
   const renderBook = book => {
-    return $("<li></li>").addClass("list-group-item").html(`
+    return $('<li></li>')
+      .addClass('list-group-item')
+      .html(
+        `
       <button type="button" class="btn btn-info update-btn edit">Edit</button>
       <button type="button" class="btn btn-warning delete">Delete</button>
 
@@ -17,26 +20,29 @@ $(document).ready(function() {
       <div class="form-control author">${book.author}</div>
       <div class="form-control releaseDate">${book.releaseDate}</div>
       <div class="form-control image"><img src="${book.image}" class="image" height="150"/></div>
-      `).data('id', book._id)
+      `
+      )
+      .data('id', book._id);
   };
 
   //rendering retrieved info on the page - inserting into ul element
   const displayBooks = () => {
-    getBooks().then(res => {
-      return res.json();
-    }).then(res => {
-      let content = '';
-      content = res.books.map(book => renderBook(book));
-      $ul.html(content);
-    }).catch(err => {
-      $ul.html('Error occured.');
-    });
+    getBooks()
+      .then(res => {
+        return res.json();
+      })
+      .then(res => {
+        let content = '';
+        content = res.books.map(book => renderBook(book));
+        $ul.html(content);
+      })
+      .catch(err => {
+        $ul.html('Error occured.');
+      });
   };
 
-  // displayBooks();
-
   // handler for See All Books button
-  $('#getAllBooks').on('click', (event) => {
+  $('#getAllBooks').on('click', event => {
     event.preventDefault();
     const button = $(event.target);
     const booksList = $('.list-group.books-list');
@@ -54,20 +60,21 @@ $(document).ready(function() {
 
   //form validation error messages will be put into spans
   const createSpan = (cssClass, text) => {
-    return $("<span/>").addClass(cssClass).text(text);
+    return $('<span/>')
+      .addClass(cssClass)
+      .text(text);
   };
 
   //  validating form for adding new item
   const validateForm = values => {
     const rawErrors = Object.keys(values).map(key => {
       if (!values[key]) {
-        return {name: key, error: `${key} cannot be empty`};
+        return { name: key, error: `${key} cannot be empty` };
       }
       return '';
-    })
+    });
     return _.compact(rawErrors);
   };
-
 
   //making POST request to api
   const addBook = values => {
@@ -77,17 +84,19 @@ $(document).ready(function() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(values)
-    })
+    });
   };
 
   //  handler for "Add your book" button
-  $("#create").on('click', (event) => {
+  $('#create').on('click', event => {
     event.preventDefault();
     const values = {};
     $.each($('#addItem').serializeArray(), (i, field) => {
       values[field.name] = field.value;
     });
-      $('#addItem').find('.error-msg').remove();
+    $('#addItem')
+      .find('.error-msg')
+      .remove();
 
     const errors = validateForm(values);
 
@@ -95,22 +104,28 @@ $(document).ready(function() {
       errors.forEach(item => {
         const span = createSpan('error-msg', item.error);
         span.insertBefore($('#addItem').find(`input[name="${item.name}"]`));
-      })
+      });
     } else {
-      addBook(values).then(res => {
-        return res.json();
-      }).then(book => {
-        $ul.prepend(renderBook(book));
-        $('#addItem')[0].reset();
-      }).catch(err => {
-        console.log(err);
-      })
+      addBook(values)
+        .then(res => {
+          return res.json();
+        })
+        .then(book => {
+          $ul.prepend(renderBook(book));
+          $('#addItem')[0].reset();
+        })
+        .catch(err => {
+          console.log(err);
+        });
     }
   });
 
   //create new fields for saving updated book info
   const createInput = (type, cssClass, val) => {
-    return $("<input/>").attr('type', type).addClass(cssClass).val(val);
+    return $('<input/>')
+      .attr('type', type)
+      .addClass(cssClass)
+      .val(val);
   };
 
   //when clicking on Edit button:
@@ -145,14 +160,14 @@ $(document).ready(function() {
   };
 
   //making PUT request to api
-  const saveBook = ({book, bookId}) => {
+  const saveBook = ({ book, bookId }) => {
     return fetch(`https://mutably.herokuapp.com/books/${bookId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(book)
-    })
+    });
   };
 
   //saving updated info
@@ -170,18 +185,21 @@ $(document).ready(function() {
         image: imageInput.val()
       },
       bookId: li.data('id')
-    }).then(res => {
-      return res.json();
-    }).then(book => {
-      li.replaceWith(renderBook(book));
-      console.log(`Book with id ${book._id} has been updated`);
-    }).catch(err => {
-      console.log(err);
     })
+      .then(res => {
+        return res.json();
+      })
+      .then(book => {
+        li.replaceWith(renderBook(book));
+        console.log(`Book with id ${book._id} has been updated`);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   };
 
   //handler for Edit button
-  $('.books-list').on('click', '.btn.update-btn', (event) => {
+  $('.books-list').on('click', '.btn.update-btn', event => {
     const button = $(event.target);
     const li = button.parent();
     button.toggleClass('btn-success btn-info edit save');
@@ -196,20 +214,22 @@ $(document).ready(function() {
 
   //makind DELETE request to api
   const deleteBook = bookId => {
-    return fetch(`https://mutably.herokuapp.com/books/${bookId}`, {method: 'DELETE'})
+    return fetch(`https://mutably.herokuapp.com/books/${bookId}`,
+      { method: 'DELETE' });
   };
 
   //handler for Delete button
-  $('.books-list').on('click', '.btn.delete', (event) => {
+  $('.books-list').on('click', '.btn.delete', event => {
     const button = $(event.target);
     const li = button.parent();
     const id = li.data('id');
-    deleteBook(id).then(() => {
-      li.remove();
-      console.log(`Book with id ${id} has been removed`);
-    }).catch((err) => {
-      console.log(err);
-    });
+    deleteBook(id)
+      .then(() => {
+        li.remove();
+        console.log(`Book with id ${id} has been removed`);
+      })
+      .catch(err => {
+        console.log(err);
+      });
   });
-
 }); //end of doc ready
